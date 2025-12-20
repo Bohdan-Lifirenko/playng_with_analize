@@ -2,29 +2,57 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Flask + Plotly + Slider</title>
+    <title>Аналітика показників за датою</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Стилі -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 <body>
 
-<h2>Графік з фільтрацією по даті</h2>
+<header>
+    <h1>Аналітика показників у часовому розрізі</h1>
+</header>
 
-<label for="dateSlider">Дата:</label>
-<input type="range" id="dateSlider" step="1">
-<span id="dateLabel"></span>
+<main>
 
-<div id="chart"></div>
+    <!-- Фільтри -->
+    <section class="controls" aria-label="Фільтри даних">
+        <div class="control-group">
+            <label for="dateSelect">Дата для аналізу</label>
+            <select id="dateSelect" aria-describedby="dateHint"></select>
+            <div class="hint" id="dateHint">
+                Дані відображаються з початку періоду до обраної дати
+            </div>
+        </div>
+    </section>
 
-<!-- Передача дат з Flask у JS -->
+    <!-- Графік -->
+    <section class="chart-container" aria-label="Графік динаміки">
+        <div id="chart"></div>
+    </section>
+
+</main>
+
+<footer>
+    Дані наведено для аналітичних та навчальних цілей
+</footer>
+
+<!-- Дані з Flask -->
 <script>
     window.APP_CONFIG = {
-        minDate: "{{ min_date }}",
-        maxDate: "{{ max_date }}"
+        dates: {{ dates | tojson }}
     };
 </script>
 
-<!-- Підключення окремого JS-файлу -->
+<!-- Логіка графіка -->
 <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 
 </body>

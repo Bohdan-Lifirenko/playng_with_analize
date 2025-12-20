@@ -9,17 +9,15 @@ df = pd.DataFrame({
     "value": [i * 10 + (i % 5) * 7 for i in range(30)]
 })
 
-df.head()
-
 @app.route("/")
 def index():
-    min_date = df["date"].min().strftime("%Y-%m-%d")
-    max_date = df["date"].max().strftime("%Y-%m-%d")
+    dates = df["date"].dt.strftime("%Y-%m-%d").tolist()
+
     return render_template(
         "index.html",
-        min_date=min_date,
-        max_date=max_date
+        dates=dates
     )
+
 
 @app.route("/data")
 def get_data():

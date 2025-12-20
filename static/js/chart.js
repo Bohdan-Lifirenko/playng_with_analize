@@ -1,29 +1,16 @@
-const minDate = new Date(window.APP_CONFIG.minDate);
-const maxDate = new Date(window.APP_CONFIG.maxDate);
+const dateSelect = document.getElementById("dateSelect");
+const dates = window.APP_CONFIG.dates;
 
-const slider = document.getElementById("dateSlider");
-const label = document.getElementById("dateLabel");
+// Заповнення випадаючого списку
+dates.forEach(date => {
+    const option = document.createElement("option");
+    option.value = date;
+    option.textContent = date;
+    dateSelect.appendChild(option);
+});
 
-const daysCount = Math.round(
-    (maxDate - minDate) / (1000 * 60 * 60 * 24)
-);
-
-slider.min = 0;
-slider.max = daysCount;
-slider.value = 0;
-
-function formatDate(date) {
-    return date.toISOString().split("T")[0];
-}
-
-function loadData(daysOffset) {
-    const selectedDate = new Date(minDate);
-    selectedDate.setDate(selectedDate.getDate() + Number(daysOffset));
-
-    const dateStr = formatDate(selectedDate);
-    label.textContent = dateStr;
-
-    fetch(`/data?date=${dateStr}`)
+function loadData(selectedDate) {
+    fetch(`/data?date=${selectedDate}`)
         .then(response => response.json())
         .then(data => {
             Plotly.react(
@@ -35,7 +22,7 @@ function loadData(daysOffset) {
                     mode: "lines+markers"
                 }],
                 {
-                    title: "Динаміка значення до вибраної дати",
+                    title: `Динаміка значень до ${selectedDate}`,
                     xaxis: { title: "Дата" },
                     yaxis: { title: "Значення" }
                 }
@@ -43,9 +30,11 @@ function loadData(daysOffset) {
         });
 }
 
-slider.addEventListener("input", () => {
-    loadData(slider.value);
+// Обробник зміни дати
+dateSelect.addEventListener("change", () => {
+    loadData(dateSelect.value);
 });
 
-// Початкове завантаження
-loadData(0);
+// Початковий рендер (остання дата)
+dateSelect.value = dates[dates.length - 1];
+loadData(dateSelect.value);
