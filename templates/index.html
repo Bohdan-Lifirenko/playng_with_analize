@@ -2,13 +2,30 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Plotly + Flask</title>
+    <title>Flask + Plotly + Slider</title>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h1>Графік у Flask</h1>
 
-    <!-- Вставка Plotly-графіка -->
-    {{ graph_html | safe }}
+<h2>Графік з фільтрацією по даті</h2>
+
+<label for="dateSlider">Дата:</label>
+<input type="range" id="dateSlider" step="1">
+<span id="dateLabel"></span>
+
+<div id="chart"></div>
+
+<!-- Передача дат з Flask у JS -->
+<script>
+    window.APP_CONFIG = {
+        minDate: "{{ min_date }}",
+        maxDate: "{{ max_date }}"
+    };
+</script>
+
+<!-- Підключення окремого JS-файлу -->
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 
 </body>
 </html>

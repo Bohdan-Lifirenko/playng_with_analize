@@ -1,29 +1,36 @@
-from flask import Flask, render_template
-import plotly.express as px
+from flask import Flask, render_template, request, jsonify
 import pandas as pd
 
 app = Flask(__name__)
 
+# Дані з колонкою дат
+df = pd.DataFrame({
+    "date": pd.date_range(start="2023-01-01", periods=30, freq="D"),
+    "value": [i * 10 + (i % 5) * 7 for i in range(30)]
+})
+
+df.head()
+
 @app.route("/")
 def index():
-    # Дані
-    df = pd.DataFrame({
-        "year": [2019, 2020, 2021, 2022, 2023],
-        "revenue": [100, 150, 130, 180, 220]
-    })
-
-    # Графік
-    fig = px.line(
-        df,
-        x="year",
-        y="revenue",
-        title="Динаміка виручки"
+    min_date = df["date"].min().strftime("%Y-%m-%d")
+    max_date = df["date"].max().strftime("%Y-%m-%d")
+    return render_template(
+        "index.html",
+        min_date=min_date,
+        max_date=max_date
     )
 
-    # Перетворення графіка в HTML
-    graph_html = fig.to_html(full_html=False)
+@app.route("/data")
+def get_data():
+    selected_date = request.args.get("date")
 
-    return render_template("index.html", graph_html=graph_html)
+    filtered = df[df["date"] <= selected_date]
+
+    return jsonify({
+        "date": filtered["date"].astype(str).tolist(),
+        "value": filtered["value"].tolist()
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
