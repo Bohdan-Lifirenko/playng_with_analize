@@ -1,40 +1,53 @@
-const dateSelect = document.getElementById("dateSelect");
 const dates = window.APP_CONFIG.dates;
+const select = document.getElementById("dateSelect");
 
-// Заповнення випадаючого списку
+// dropdown
 dates.forEach(date => {
     const option = document.createElement("option");
     option.value = date;
     option.textContent = date;
-    dateSelect.appendChild(option);
+    select.appendChild(option);
 });
 
-function loadData(selectedDate) {
+function updateCharts(selectedDate) {
     fetch(`/data?date=${selectedDate}`)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
-            Plotly.react(
-                "chart",
-                [{
-                    x: data.date,
-                    y: data.value,
-                    type: "scatter",
-                    mode: "lines+markers"
-                }],
-                {
-                    title: `Динаміка значень до ${selectedDate}`,
-                    xaxis: { title: "Дата" },
-                    yaxis: { title: "Значення" }
-                }
-            );
+
+            Plotly.react("chartRevenue", [{
+                x: data.date,
+                y: data.revenue,
+                type: "scatter",
+                mode: "lines+markers"
+            }], {
+                title: "Виручка"
+            });
+
+            Plotly.react("chartProfit", [{
+                x: data.date,
+                y: data.profit,
+                type: "scatter",
+                mode: "lines+markers"
+            }], {
+                title: "Прибуток"
+            });
+
+            Plotly.react("chartExpenses", [{
+                x: data.date,
+                y: data.expenses,
+                type: "scatter",
+                mode: "lines+markers"
+            }], {
+                title: "Витрати"
+            });
+
         });
 }
 
-// Обробник зміни дати
-dateSelect.addEventListener("change", () => {
-    loadData(dateSelect.value);
+select.addEventListener("change", () => {
+    updateCharts(select.value);
 });
 
-// Початковий рендер (остання дата)
-dateSelect.value = dates[dates.length - 1];
-loadData(dateSelect.value);
+// стартове завантаження (остання дата)
+select.value = dates[dates.length - 1];
+updateCharts(select.value);
