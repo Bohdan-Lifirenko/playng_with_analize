@@ -52,7 +52,7 @@ initialize_services()
 
 @app.route("/")
 def index():
-    tax_id = "00446368"
+    tax_id = "44278221"
 
     # Get company information
     company_obj = financial_service.get_company_by_tax_id(tax_id)

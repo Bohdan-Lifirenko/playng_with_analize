@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Водоспадна діаграма балансу</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Демонстрація графіка на веб-сторінці</h1>
+        <p>Ось інтерактивна водоспадна діаграма, побудована з Plotly. Наведіть мишкою для деталей.</p>
+        {{ graph_html | safe }}  <!-- Вставка графіка (safe для HTML) -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+/* === Card overall look === */
+.card {
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+/* Header styling */
+.card-header {
+    border-radius: 12px 12px 0 0;
+    letter-spacing: 0.3px;
+}
+
+/* === Info item wrapper === */
+.info-item {
+    padding: 10px 14px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+/* Hover effect */
+.info-item:hover {
+    background-color: #eef2f6;
+    transform: translateY(-1px);
+}
+
+/* === Labels (small gray text) === */
+.info-item label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Icons inside labels */
+.info-item label i {
+    margin-right: 6px;
+    color: #6c757d;
+}
+
+/* === Values === */
+.info-item p {
+    font-size: 1rem;
+    color: #212529;
+}
+
+/* Monospace values (IDs, codes) */
+.font-monospace {
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+/* === Responsive spacing improvements === */
+@media (max-width: 768px) {
+    .info-item {
+        padding: 12px;
+    }
+}

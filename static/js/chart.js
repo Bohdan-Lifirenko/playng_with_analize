@@ -6,6 +6,7 @@ const taxId = company.tax_id;
 document.addEventListener('DOMContentLoaded', () => {
     provideDataToBalanceChart()
     provideDataToRevenueChart()
+    provideDataToBalanceWFChart()
 });
 
 function provideDataToRevenueChart() {
@@ -71,13 +72,13 @@ function provideDataToBalanceChart() {
     const selectedDate = '2024-12-31';
 
     fetch(`/api/balance/${taxId}?date=${selectedDate}`)
-        .then(response =>{
+        .then(response => {
             data = response.json();
             console.log(data)
             return data;
         })
         .then(data => {
-             // Create pie chart for equity and liabilities
+            // Create pie chart for equity and liabilities
             const trace = {
                 values: [data.equity, data.liabilities],
                 labels: ['Equity', 'Liabilities'],
@@ -93,7 +94,7 @@ function provideDataToBalanceChart() {
             const layout = {
                 title: {
                     text: `Balance Sheet - ${selectedDate}`,
-                    font: { size: 18 }
+                    font: {size: 18}
                 },
                 annotations: [{
                     text: `Total Assets<br>${data.assets}`,
@@ -102,14 +103,14 @@ function provideDataToBalanceChart() {
                     xref: 'paper',
                     yref: 'paper',
                     showarrow: false,
-                    font: { size: 14, color: '#6b7280' }
+                    font: {size: 14, color: '#6b7280'}
                 }],
                 showlegend: true,
                 legend: {
                     orientation: 'h',
                     y: -0.3
                 },
-                margin: { t: 50, r: 30, b: 100, l: 30 }
+                margin: {t: 50, r: 30, b: 100, l: 30}
             };
 
             const config = {
@@ -120,5 +121,100 @@ function provideDataToBalanceChart() {
             };
 
             Plotly.newPlot('balanceChart', [trace], layout, config);
+        });
+}
+
+function provideDataToBalanceWFChart() {
+    const selectedDate = '2024-12-31';
+    fetch(`/api/balance/${taxId}?date=${selectedDate}`)
+        .then(response =>{
+            data = response.json();
+            console.log(data)
+            return data;
+        })
+        .then(data => {
+            // Calculate liabilities from the balance equation: Assets = Liabilities + Equity
+            const assets = data.assets;
+            const equity = data.equity;
+            const liabilities = assets - equity;
+
+            // Create waterfall chart data
+            const trace = {
+                type: 'waterfall',
+                orientation: 'v',
+                measure: ['relative', 'relative', 'total'],
+                x: ['Equity', 'Liabilities', 'Total Assets'],
+                textposition: 'outside',
+                text: [
+                    `${equity.toLocaleString()} UAH`,
+                    `${liabilities.toLocaleString()} UAH`,
+                    `${assets.toLocaleString()} UAH`
+                ],
+                y: [equity, liabilities, 0], // 0 for total since it's calculated automatically
+                connector: {
+                    line: {
+                        color: "rgb(63, 63, 63)"
+                    }
+                },
+                increasing: {
+                    marker: {
+                        color: equity >= 0 ? '#4ade80' : '#f87171' // Green for positive equity, red for negative
+                    }
+                },
+                decreasing: {
+                    marker: {
+                        color: '#f87171' // Red for liabilities (debt)
+                    }
+                },
+                totals: {
+                    marker: {
+                        color: '#6b7280' // Gray for total assets
+                    }
+                },
+                hovertemplate: '<b>%{x}</b><br>%{y:,.0f} UAH<extra></extra>'
+            };
+
+            const layout = {
+                title: {
+                    text: `Balance Sheet Waterfall - ${selectedDate}`,
+                    font: { size: 18 }
+                },
+                xaxis: {
+                    title: 'Balance Components'
+                },
+                yaxis: {
+                    title: 'Amount (UAH)',
+                    tickformat: ',.0f'
+                },
+                annotations: [
+                    {
+                        text: `Balance Equation: Assets = Liabilities + Equity<br>` +
+                              `${assets.toLocaleString()} = ${liabilities.toLocaleString()} + ${equity.toLocaleString()}`,
+                        x: 0.5,
+                        y: 1.1,
+                        xref: 'paper',
+                        yref: 'paper',
+                        showarrow: false,
+                        font: { size: 12, color: '#6b7280' },
+                        align: 'center'
+                    }
+                ],
+                showlegend: false,
+                plot_bgcolor: '#f8f9fa',
+                paper_bgcolor: 'white',
+                margin: { t: 80, r: 30, b: 50, l: 80 }
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
+            };
+
+            Plotly.newPlot('balanceWFChart', [trace], layout, config);
+        })
+        .catch(error => {
+            console.error('Error fetching balance data:', error);
         });
 }
